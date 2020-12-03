@@ -1,0 +1,88 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.homePage{
+  padding-top: 40vh;
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; */
+  justify-content: start;
+}
+
+.homePageTitle{
+  color: rgb(55, 156, 238);
+}
+
+.playBtn, .highScoreBtn{
+  margin-bottom: 10px;
+  width: 30%;
+  background-color: #42A3B9 !important;
+}
+
+.quizResult{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.question p{
+  margin-bottom: 10px;
+  padding: 10px;
+  font-weight: bolder;
+  color: rgb(180, 78, 78);
+  text-align: left;
+  width: 100%;
+  /* border: 1px solid black; */
+  float: left;
+}
+
+.answer{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  width: 100%;
+  border: 1px solid black;
+  margin-bottom: 2px;
+  cursor: pointer;
+  transition: margin-bottom 0.1s,margin-top 0.1s, border 0.1s;
+  -webkit-transition: margin-bottom 0.1s,margin-top 0.1s, border 0.1s;
+  -moz-transition: margin-bottom 0.1s,margin-top 0.1s, border 0.1s;
+  -ms-transition: margin-bottom 0.1s,margin-top 0.1s, border 0.1s;
+  -o-transition: margin-bottom 0.1s,margin-top 0.1s, border 0.1s;
+}
+
+.answer:hover{
+  border: 2px solid rgb(50, 50, 170);
+  margin-top: 5px; 
+  margin-bottom: 5px;
+}
+
+
+.answer .answerNum{
+  width: 4%;
+  text-align: center;
+  padding: 10px;
+  margin: 0 !important;
+  background-color: rgb(56, 127, 148);
+  color: #fff;
+}
+
+.answer .answerValue{
+  text-align: center;
+  padding: 10px;
+  margin: 0 !important;
+}
+
+.correct{
+  /* border: 1px solid green; */
+  background-color: rgb(67, 195, 67);
+}
+
+.wrong{
+  /* border: 1px solid red; */
+  background-color: rgb(144, 26, 26);
+  color: #fff;
+}
