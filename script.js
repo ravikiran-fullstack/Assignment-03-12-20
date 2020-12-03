@@ -49,7 +49,7 @@ async function onGamePageLoad(){
 }
 
 async function fetchQuestions(){
-  const url = 'https://opentdb.com/api.php?amount=10&type=multiple';
+  const url = 'https://opentdb.com/api.php?amount=10&category=18&difficulty=easy&type=multiple';
   try{
     const res = await fetch(url);
     const data = await res.json();
@@ -77,7 +77,7 @@ function generateHtmlForGamePage(questionsData){
   //console.log(questionsData);
   const containerGame = createDomElement('div', 'container', 'gamePageContainer');
   const rowGame = createDomElement('div', 'row');
-  const colGame = createDomElement('div', 'col-12 text-center homePage');
+  const colGame = createDomElement('div', 'col-12 text-center');
 
   for(let i = 0; i < questionsData.length; i++ ){
     const qDiv = generateChallengeHtml(questionsData[i], i);

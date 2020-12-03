@@ -28,8 +28,11 @@
   justify-content: space-between;
 }
 
+.question{
+  margin-top: 10px;
+}
 .question p{
-  margin-bottom: 10px;
+  margin-bottom: 0px;
   padding: 10px;
   font-weight: bolder;
   color: rgb(180, 78, 78);
