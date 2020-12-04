@@ -37,6 +37,7 @@ function generateHtmlForHomePage() {
 /////////////////////////////////////// JS code for game.html START///////////////////////
 let scoreCount = 0;
 let qsDone = 0;
+let showQuestionNum = 0;
 
 async function onGamePageLoad(){
   // Fetch questions from opentdb 
@@ -83,9 +84,17 @@ function generateHtmlForGamePage(questionsData){
   const colGame = createDomElement('div', 'col-12 text-center');
   const resultsDiv = generateResultsHtml();
   colGame.append(resultsDiv);
-
+    //Loading gif to create an illusion of precessing 
+    const loadingIndicator = createDomElement('div', 'hide', 'loadingIndicator');
+      const gifImage = createDomElement('img', 'img-fluid', '');
+      gifImage.src = './images/loading.gif';
+    loadingIndicator.append(gifImage);
+  colGame.append(loadingIndicator);
   for(let i = 0; i < questionsData.length; i++ ){
     const qDiv = generateChallengeHtml(questionsData[i], i);
+    if(i === showQuestionNum){
+      qDiv.classList.remove('hide');
+    }
     colGame.append(qDiv);
   }
 
@@ -125,10 +134,10 @@ function generateResultsHtml(){
 
 function generateChallengeHtml(challenge, index){
   const id = 'q'+index;
-    const qDiv = createDomElement('div', '', id);
+    const qDiv = createDomElement('div', 'hide', id);
       const question = createDomElement('div', 'question', '');
         const questionPara = createDomElement('p');
-        const questionParaText = document.createTextNode(challenge.question);
+        const questionParaText = document.createTextNode('Q'+(index+1)+': '+challenge.question);
         questionPara.append(questionParaText);
       question.append(questionPara);
     qDiv.append(question);    
@@ -165,28 +174,46 @@ function setGameConfig(){
   }
 } 
 
+async function showQuestion(questionNum){
+  await delay();
+  document.getElementById(`q${questionNum-1}`).classList.add('hide');
+  document.getElementById('loadingIndicator').classList.remove('hide');
+  await delay();
+  document.getElementById('loadingIndicator').classList.add('hide');
+  document.getElementById(`q${questionNum}`).classList.remove('hide');
+}
+
+function delay(){
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      res();
+    }, 1000)
+  })
+}
+
 function updateResults(ele, value, isCorrect){
-  console.log(ele, value, isCorrect);
   const parentElement = ele.parentElement;
   parentElement.style.pointerEvents = 'none';
   //pointer-events: none;
   if(isCorrect === "true"){
     ele.classList.add('correct');
     scoreCount++;
-    console.log(scoreCount);
   } else{
     ele.classList.add('wrong');
   }
 
   questionsAnswered++;
   document.getElementById('qsDone').innerHTML = `${questionsAnswered}/10`
-  document.getElementById('pScore').innerHTML = scoreCount; 
+  document.getElementById('pScore').innerHTML = scoreCount * 10; 
   document.getElementById('progressResultsRange').value = scoreCount;
   
   updateLocalStorage(scoreCount);
   
   if(questionsAnswered === 10){
     movetoEndPage();
+  } else{
+    showQuestionNum++;
+    showQuestion(showQuestionNum);
   }
 }
 
@@ -194,10 +221,22 @@ function updateLocalStorage(scoreCount){
     localStorage.setItem('score', scoreCount);
 }
 
-function movetoEndPage(){
+async function movetoEndPage(){
+  resetGame();
+  //Introduces delay
+  await delay();
+  document.getElementById(`q9`).classList.add('hide');
+  document.getElementById('loadingIndicator').classList.remove('hide');
   setTimeout(()=>{
+    document.getElementById('loadingIndicator').classList.add('hide');
     window.location.replace("/end.html");
   }, 3000);
+}
+
+function resetGame(){
+  scoreCount = 0;
+  qsDone = 0;
+  showQuestionNum = 0;
 }
 
 

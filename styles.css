@@ -75,8 +75,14 @@
 
 .answer .answerValue{
   text-align: center;
-  padding: 10px;
+  padding: 10px;  
   margin: 0 !important;
+}
+
+@media screen and (max-width: 780px) {
+  .answer .answerNum{
+    width: 10%;
+ }
 }
 
 .correct{
@@ -118,4 +124,8 @@
 
 #highestScorer{
   color: red;
+}
+
+.hide{
+  display: none;
 }
