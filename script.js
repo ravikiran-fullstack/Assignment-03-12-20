@@ -1,5 +1,3 @@
-let userName = [];
-
 function createDomElement(ele, eleClass = '', eleId = ''){
   const element = document.createElement(ele);
   eleClass !== ''? element.setAttribute('class', eleClass): '';
@@ -7,6 +5,7 @@ function createDomElement(ele, eleClass = '', eleId = ''){
   return element;
 }
 
+/////////////////////////////////////// JS code for home.html///////////////////////
 function onHomePageLoad(){
   generateHtmlForHomePage();
 }
@@ -33,9 +32,11 @@ function generateHtmlForHomePage() {
   containerHome.append(rowHome);
   document.body.append(containerHome);
 }
+/////////////////////////////////////// JS code for home.html END///////////////////////
 
-///// 
-let gameCount = 0;
+/////////////////////////////////////// JS code for game.html START///////////////////////
+let scoreCount = 0;
+let qsDone = 0;
 
 async function onGamePageLoad(){
   // Fetch questions from opentdb 
@@ -46,6 +47,9 @@ async function onGamePageLoad(){
 
   // Generate game page layout
   generateHtmlForGamePage(refactoredData);
+
+  //Set Game Initial Configs
+  setGameConfig();
 }
 
 async function fetchQuestions(){
@@ -78,6 +82,8 @@ function generateHtmlForGamePage(questionsData){
   const containerGame = createDomElement('div', 'container', 'gamePageContainer');
   const rowGame = createDomElement('div', 'row');
   const colGame = createDomElement('div', 'col-12 text-center');
+  const resultsDiv = generateResultsHtml();
+  colGame.append(resultsDiv);
 
   for(let i = 0; i < questionsData.length; i++ ){
     const qDiv = generateChallengeHtml(questionsData[i], i);
@@ -88,6 +94,34 @@ function generateHtmlForGamePage(questionsData){
   rowGame.append(colGame);
   containerGame.append(rowGame);
   document.body.append(containerGame);
+}
+
+function generateResultsHtml(){
+    const div = createDomElement('div', 'results');
+      const divQsDone = createDomElement('div');
+        const pQsDoneText = createDomElement('p');
+        pQsDoneText.append(document.createTextNode('Questions Done'));
+        const pQsDone = createDomElement('p', '', 'qsDone');
+        pQsDone.innerHTML = '0/10';
+      divQsDone.append(pQsDoneText, pQsDone);  
+
+      const divResultsRange = createDomElement('div');
+        const pResultsRangeText = createDomElement('p');
+        pResultsRangeText.append(document.createTextNode('Range'));
+        const progressResultsRange = createDomElement('progress', '', 'progressResultsRange');
+        progressResultsRange.value = 0;
+        progressResultsRange.max = 10;
+      divResultsRange.append(pResultsRangeText, progressResultsRange);  
+
+      const divScore = createDomElement('div');
+        const pScoreText = createDomElement('p');
+        pScoreText.append(document.createTextNode('Score'))
+        const pScore = createDomElement('p', '', 'pScore');
+        pScore.innerHTML = 0;
+      divScore.append(pScoreText, pScore);
+
+      div.append(divQsDone, divResultsRange, divScore);
+    return div;
 }
 
 function generateChallengeHtml(challenge, index){
@@ -122,33 +156,97 @@ function generateAnswerHtml(answerObj){
     let value = answerObj.answer;
     let isCorrect = answerObj.isCorrect;
     let d = this;
-    answerDiv.setAttribute('onclick',`checkAnswer(this, "${value}", "${isCorrect}")`);
+    answerDiv.setAttribute('onclick',`updateResults(this, "${value}", "${isCorrect}")`);
   return answerDiv;
 }
 
-function checkAnswer(ele, value, isCorrect){
+function setGameConfig(){
+  scoreCount = 0;
+  questionsAnswered = 0;
+  if(localStorage.getItem('score')){
+    localStorage.setItem('score', null);
+  }
+} 
+
+function updateResults(ele, value, isCorrect){
   console.log(ele, value, isCorrect);
   const parentElement = ele.parentElement;
   parentElement.style.pointerEvents = 'none';
   //pointer-events: none;
   if(isCorrect === "true"){
     ele.classList.add('correct');
-    gameCount++;
+    scoreCount++;
+    console.log(scoreCount);
   } else{
     ele.classList.add('wrong');
   }
 
-  console.log(gameCount);
+  questionsAnswered++;
+  document.getElementById('qsDone').innerHTML = `${questionsAnswered}/10`
+  document.getElementById('pScore').innerHTML = scoreCount; 
+  document.getElementById('progressResultsRange').value = scoreCount;
+  
+  updateLocalStorage(scoreCount);
+  
+  if(questionsAnswered === 10){
+    movetoEndPage();
+  }
+}
+
+function updateLocalStorage(scoreCount){
+    localStorage.setItem('score', scoreCount);
+}
+
+function movetoEndPage(){
+  setTimeout(()=>{
+    window.location.replace("/end.html");
+  }, 3000);
 }
 
 function onEndPageLoad(){
-  const containerGame = createDomElement('div', 'container', 'endPageContainer');
-  document.body.append(containerGame);
+  updateScoreInEndPage();
+}
+
+function updateScoreInEndPage(){
+  if(localStorage.getItem('score') !== null){
+    document.getElementById('score').innerHTML = 'Score '+localStorage.getItem('score');
+  }
+}
+
+function enableSave(){
+  const userName = document.getElementById('userName').value;
+  if(userName){
+    document.getElementById('saveBtn').disabled = false;
+  } else {
+    document.getElementById('saveBtn').disabled = true;
+  }
+}
+
+function saveScore(){
+  let highScores = [];
+  if(localStorage.getItem('highScores')){
+    highScores = JSON.parse(localStorage.getItem('highScores'));
+  } else {
+    highScores = [];
+  }
+  const score = localStorage.getItem('score');
+  const userName = document.getElementById('userName').value;
+  const highScore = {userName, score}
+  highScores.push(highScore);
+  localStorage.setItem('highScores', JSON.stringify(highScores));
 }
 
 
 function onHighScoresPageLoad(){
-  const containerGame = createDomElement('div', 'container', 'highScoresPageContainer');
-  document.body.append(containerGame);
+  populateHighScoresList();
+}
+
+function populateHighScoresList(){
+  if(localStorage.getItem('highScores')){
+    let highScores = JSON.parse(localStorage.getItem('highScores'));
+    highScores.map(highScore => {
+      console.log(highScore.userName, highScore.score);
+    })
+  }
 }
 

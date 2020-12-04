@@ -8,7 +8,17 @@
   <title>End</title>
 </head>
 <body onload="onEndPageLoad()">
-
+  <div class="container">
+    <div class="row">
+      <div class="offset-md-3 col-md-6 endPage">
+        <p id="score" class="text-center">Score:</p>
+        <input type="text" id="userName" placeholder="username" onkeyup="enableSave()">
+        <input type="button" class="btn btn-info" value="save" id="saveBtn"  onclick="saveScore()" disabled>
+        <a class="btn" href="/game.html">Play again</a>
+        <a class="btn btn-primary" href="/index.html">Go Home</a>
+      </div>
+    </div>
+  </div>
   <script src="script.js"></script>
 </body>
 </html>
