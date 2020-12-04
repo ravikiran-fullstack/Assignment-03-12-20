@@ -337,7 +337,7 @@ function populateHighScoresList(){
 }
 
 function generateHighScoresList(highScores){
-  const table = createDomElement('table', 'table table-bordered mt-5');
+  const table = createDomElement('table', 'table table-bordered');
   const tr = createDomElement('tr');
     const tdUserName = createDomElement('td', 'font-weight-bold text-center');
     tdUserName.innerHTML = 'UserName';
@@ -345,6 +345,8 @@ function generateHighScoresList(highScores){
     tdUserScore.innerHTML = 'Score';
     tr.append(tdUserName, tdUserScore);
     table.append(tr);
+  
+  //highScores.sort((a,b) => (a.score > b.score) ? 1 : ((b.score > a.score) ? -1 : 0));  
   highScores.forEach(highScore => {
     const tr = createDomElement('tr');
       const pUserName = createDomElement('td', 'text-center');
@@ -373,19 +375,21 @@ function generateHighScorePageHtml(){
   const col = createDomElement("div", "col-md-6 offset-md-3 endPage");
   
   const h2 = createDomElement('h2', 'pageTitle text-center');
-  h2.innerHTML = 'High Scores';
+  h2.innerHTML = 'Highest Score';
   const h3 = createDomElement('h3', 'text-center', 'highestScorer');
 
 
   const statusMessage = createDomElement('h5', 'text-center', 'statusMessage');
 
+  const h4 = createDomElement('h4', 'pageTitle text-center mt-5');
+  h4.innerHTML = 'High Scores';
   const highScoresList = createDomElement('div','', 'highScoresList');
 
   const goHomeBtn = createDomElement('button', 'btn btn-info mt-2', 'goHome');
   goHomeBtn.addEventListener('click', goToHome);
   goHomeBtn.innerHTML = 'Go Home';
   
-  col.append(h2, h3, highScoresList, statusMessage, goHomeBtn);
+  col.append(h2, h3, h4, highScoresList, statusMessage, goHomeBtn);
   row.append(col);
   containerH.append(row);
   document.body.append(containerH);
