@@ -102,3 +102,12 @@
   display: flex;
   flex-direction: column;
 }
+
+.highScoresList{
+  display: flex;
+  padding: 10px;
+}
+
+.highScoresList p {
+  margin-right: 10px;
+}

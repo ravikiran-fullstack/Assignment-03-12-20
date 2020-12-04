@@ -246,7 +246,22 @@ function populateHighScoresList(){
     let highScores = JSON.parse(localStorage.getItem('highScores'));
     highScores.map(highScore => {
       console.log(highScore.userName, highScore.score);
-    })
+    });
+
+    generateHighScoresList(highScores);
+
   }
+}
+
+function generateHighScoresList(highScores){
+  highScores.forEach(highScore => {
+    const div = createDomElement('div', 'highScoresList border mt-5');
+      const pUserName = createDomElement('p','border');
+      pUserName.innerHTML = highScore.userName;
+      const pScore = createDomElement('p','border');
+      pScore.innerHTML = highScore.score; 
+    div.append(pUserName,pScore);  
+    document.getElementById('highScoresList').append(div);  
+  })
 }
 
