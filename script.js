@@ -53,7 +53,7 @@ async function onGamePageLoad(){
 }
 
 async function fetchQuestions(){
-  const url = 'https://opentdb.com/api.php?amount=10&category=18&difficulty=easy&type=multiple';
+  const url = 'https://opentdb.com/api.php?amount=10&type=multiple';
   try{
     const res = await fetch(url);
     const data = await res.json();
@@ -210,7 +210,7 @@ function onEndPageLoad(){
 function generateEndPageHtml(){
     const containerEnd = createDomElement( "div", "container");
     const rowEnd = createDomElement("div", "row");
-    const colEnd = createDomElement("div", "col-md-6 offset-md-6 endPage");
+    const colEnd = createDomElement("div", "col-md-6 offset-md-3 endPage");
     
     const pScore = createDomElement('p', 'text-center mt-5', 'scoreEndPage');
     pScore.innerHTML = 'Score:';
@@ -327,7 +327,7 @@ function goToHome(){
 function generateHighScorePageHtml(){
   const containerH = createDomElement( "div", "container mt-5");
   const row = createDomElement("div", "row");
-  const col = createDomElement("div", "col-md-6 offset-md-6 endPage");
+  const col = createDomElement("div", "col-md-6 offset-md-3 endPage");
   
   const h2 = createDomElement('h2', 'pageTitle text-center');
   h2.innerHTML = 'High Scores';
