@@ -111,3 +111,11 @@
 .highScoresList p {
   margin-right: 10px;
 }
+
+.pageTitle{
+  color: #42A3B9;
+}
+
+#highestScorer{
+  color: red;
+}

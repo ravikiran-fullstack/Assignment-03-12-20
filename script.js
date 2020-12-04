@@ -78,7 +78,6 @@ function refactorQuestionsRawData(questionsRawData){
 }
 
 function generateHtmlForGamePage(questionsData){
-  //console.log(questionsData);
   const containerGame = createDomElement('div', 'container', 'gamePageContainer');
   const rowGame = createDomElement('div', 'row');
   const colGame = createDomElement('div', 'col-12 text-center');
@@ -125,7 +124,6 @@ function generateResultsHtml(){
 }
 
 function generateChallengeHtml(challenge, index){
- // console.log(challenge.question, challenge.answers);
   const id = 'q'+index;
     const qDiv = createDomElement('div', '', id);
       const question = createDomElement('div', 'question', '');
@@ -144,7 +142,6 @@ function generateChallengeHtml(challenge, index){
 } 
 
 function generateAnswerHtml(answerObj){
- // console.log(answerObj.answer, answerObj.correct);
     const answerDiv = createDomElement('div', 'answer');
       const answerNum = createDomElement('p', 'answerNum');
       answerNumText = document.createTextNode(answerObj.num);
@@ -203,22 +200,57 @@ function movetoEndPage(){
   }, 3000);
 }
 
+
+/////////////////////////////////////// JS code for end.html START///////////////////////
 function onEndPageLoad(){
+  generateEndPageHtml();
   updateScoreInEndPage();
+}
+
+function generateEndPageHtml(){
+    const containerEnd = createDomElement( "div", "container");
+    const rowEnd = createDomElement("div", "row");
+    const colEnd = createDomElement("div", "col-md-6 offset-md-6 endPage");
+    
+    const pScore = createDomElement('p', 'text-center mt-5', 'scoreEndPage');
+    pScore.innerHTML = 'Score:';
+
+    const inputUserName = createDomElement('input', 'mt-2', 'userName');
+    inputUserName.placeholder = 'User Name';
+    inputUserName.type = 'text';
+    inputUserName.addEventListener('keyup', enableSave);
+
+    const saveBtn = createDomElement('button', 'btn btn-info mt-3', 'saveScoreBtn');
+    saveBtn.innerHTML = "Save";
+    saveBtn.disabled = true;
+    saveBtn.addEventListener('click', saveScore)
+
+    const playAgainBtn = createDomElement('button', 'btn btn-primary mt-3', 'playAgain');
+    playAgainBtn.innerHTML = 'Play Again';
+    playAgainBtn.addEventListener('click', goToPlayAgain);
+
+    const goHomeBtn = createDomElement('button', 'btn mt-3', 'goHome');
+    goHomeBtn.innerHTML = 'Go Home';
+    goHomeBtn.addEventListener('click', goToHome);
+
+    colEnd.append(pScore, inputUserName, saveBtn, playAgainBtn, goHomeBtn);
+    rowEnd.append(colEnd);
+    containerEnd.append(rowEnd);
+    document.body.append(containerEnd);
 }
 
 function updateScoreInEndPage(){
   if(localStorage.getItem('score') !== null){
-    document.getElementById('score').innerHTML = 'Score '+localStorage.getItem('score');
+    document.getElementById('scoreEndPage').innerHTML = 'Score '+localStorage.getItem('score');
   }
 }
 
 function enableSave(){
   const userName = document.getElementById('userName').value;
   if(userName){
-    document.getElementById('saveBtn').disabled = false;
+    document.getElementById('saveScoreBtn').disabled = false;
   } else {
-    document.getElementById('saveBtn').disabled = true;
+    document.getElementById('saveScoreBtn').disabled = true;
   }
 }
 
@@ -236,32 +268,82 @@ function saveScore(){
   localStorage.setItem('highScores', JSON.stringify(highScores));
 }
 
+/////////////////////////////////////// JS code for highScores.html START///////////////////////
 
 function onHighScoresPageLoad(){
+  generateHighScorePageHtml();
   populateHighScoresList();
+  findHighestScore();
+}
+
+function findHighestScore(){
+  if(localStorage.getItem('highScores')){
+    let highScores = JSON.parse(localStorage.getItem('highScores'));
+    highScores.sort((a,b) => (a.score > b.score) ? -1 : ((b.score > a.score) ? 1 : 0));
+    document.getElementById('highestScorer').innerHTML = `${highScores[0].userName} - ${highScores[0].score}`
+  } else {
+    document.getElementById('statusMessage').innerHTML = 'No Scores yet, please play the game first!'
+  }
 }
 
 function populateHighScoresList(){
   if(localStorage.getItem('highScores')){
     let highScores = JSON.parse(localStorage.getItem('highScores'));
-    highScores.map(highScore => {
-      console.log(highScore.userName, highScore.score);
-    });
-
     generateHighScoresList(highScores);
-
   }
 }
 
 function generateHighScoresList(highScores){
+  const table = createDomElement('table', 'table table-bordered mt-5');
+  const tr = createDomElement('tr');
+    const tdUserName = createDomElement('td', 'font-weight-bold text-center');
+    tdUserName.innerHTML = 'UserName';
+    const tdUserScore = createDomElement('td', 'font-weight-bold text-center');
+    tdUserScore.innerHTML = 'Score';
+    tr.append(tdUserName, tdUserScore);
+    table.append(tr);
   highScores.forEach(highScore => {
-    const div = createDomElement('div', 'highScoresList border mt-5');
-      const pUserName = createDomElement('p','border');
+    const tr = createDomElement('tr');
+      const pUserName = createDomElement('td', 'text-center');
       pUserName.innerHTML = highScore.userName;
-      const pScore = createDomElement('p','border');
+      const pScore = createDomElement('td', 'text-center');
       pScore.innerHTML = highScore.score; 
-    div.append(pUserName,pScore);  
-    document.getElementById('highScoresList').append(div);  
+      tr.append(pUserName, pScore);  
+      table.append(tr);
   })
+  document.getElementById('highScoresList').append(table);  
 }
 
+function goToPlayAgain(){
+  window.location.replace("/game.html");
+}
+
+
+function goToHome(){
+  window.location.replace("/index.html");
+}
+
+
+function generateHighScorePageHtml(){
+  const containerH = createDomElement( "div", "container mt-5");
+  const row = createDomElement("div", "row");
+  const col = createDomElement("div", "col-md-6 offset-md-6 endPage");
+  
+  const h2 = createDomElement('h2', 'pageTitle text-center');
+  h2.innerHTML = 'High Scores';
+  const h3 = createDomElement('h3', 'text-center', 'highestScorer');
+
+
+  const statusMessage = createDomElement('h5', 'text-center', 'statusMessage');
+
+  const highScoresList = createDomElement('div','', 'highScoresList');
+
+  const goHomeBtn = createDomElement('button', 'btn btn-info mt-2', 'goHome');
+  goHomeBtn.addEventListener('click', goToHome);
+  goHomeBtn.innerHTML = 'Go Home';
+  
+  col.append(h2, h3, highScoresList, statusMessage, goHomeBtn);
+  row.append(col);
+  containerH.append(row);
+  document.body.append(containerH);
+}
