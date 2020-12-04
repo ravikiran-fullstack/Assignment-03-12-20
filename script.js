@@ -70,10 +70,14 @@ function refactorQuestionsRawData(questionsRawData){
       obj.question = ele.question;
       let count = 1;
       obj.answers = ele.incorrect_answers.map(answer => {
-        return {num: count++, answer: answer, isCorrect: false}
+        return {answer: answer, isCorrect: false}
       })   
-      obj.answers.push({num: count++, answer: ele.correct_answer, isCorrect: true});
-      
+      obj.answers.push({answer: ele.correct_answer, isCorrect: true});
+      // sorts and creates a randomness which solves the problem of having correct answer always at the end
+      obj.answers.sort((a,b) => (a.answer > b.answer) ? -1 : ((b.answer > a.answer) ? 1 : 0));
+      obj.answers = obj.answers.map(answer => {
+        return {...answer, num: count++,}
+      }) 
       return obj;
   });
 }
