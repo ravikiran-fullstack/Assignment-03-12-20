@@ -207,7 +207,7 @@ function updateResults(ele, value, isCorrect){
   document.getElementById('pScore').innerHTML = scoreCount * 10; 
   document.getElementById('progressResultsRange').value = scoreCount;
   
-  updateLocalStorage(scoreCount);
+  updateLocalStorage(scoreCount * 10);
   
   if(questionsAnswered === 10){
     movetoEndPage();
