@@ -141,7 +141,7 @@ function generateChallengeHtml(challenge, index){
     const qDiv = createDomElement('div', 'hide', id);
       const question = createDomElement('div', 'question', '');
         const questionPara = createDomElement('p');
-        const questionParaText = document.createTextNode('Q'+(index+1)+': '+challenge.question);
+        const questionParaText = document.createTextNode('Q' + (index+1)+': ' + formatString(challenge.question)); // Replaces &#039; with ' and &quot; with "
         questionPara.append(questionParaText);
       question.append(questionPara);
     qDiv.append(question);    
@@ -154,13 +154,26 @@ function generateChallengeHtml(challenge, index){
   return qDiv;
 } 
 
+// Replaces &#039; with ' and &quot; with "
+function formatString(str){
+  let tempStr;
+  if(str.includes('&#039;')){
+    str = str.replaceAll('&#039;', "'");
+  } 
+
+  if(str.includes('&quot;')){
+    str = str.replaceAll('&quot;', '"');
+  }
+  return str;
+}
+
 function generateAnswerHtml(answerObj){
     const answerDiv = createDomElement('div', 'answer');
       const answerNum = createDomElement('p', 'answerNum');
       answerNumText = document.createTextNode(answerObj.num);
       answerNum.append(answerNumText);
       const answerValue = createDomElement('p', 'answerValue');
-        answerValueText = document.createTextNode(answerObj.answer);
+        answerValueText = document.createTextNode(formatString(answerObj.answer)); // Replaces &#039; with ' and &quot; with "
       answerValue.append(answerValueText);
     answerDiv.append(answerNum, answerValue);
     let value = answerObj.answer;
@@ -179,19 +192,19 @@ function setGameConfig(){
 } 
 
 async function showQuestion(questionNum){
-  await delay();
+  await delay(1000);
   document.getElementById(`q${questionNum-1}`).classList.add('hide');
   document.getElementById('loadingIndicator').classList.remove('hide');
-  await delay();
+  await delay(1000);
   document.getElementById('loadingIndicator').classList.add('hide');
   document.getElementById(`q${questionNum}`).classList.remove('hide');
 }
 
-function delay(){
+function delay(time){
   return new Promise((res, rej) => {
     setTimeout(() => {
       res();
-    }, 1000)
+    }, time)
   })
 }
 
@@ -228,7 +241,7 @@ function updateLocalStorage(scoreCount){
 async function movetoEndPage(){
   resetGame();
   //Introduces delay
-  await delay();
+  await delay(1000);
   document.getElementById(`q9`).classList.add('hide');
   document.getElementById('loadingIndicator').classList.remove('hide');
   setTimeout(()=>{
@@ -263,6 +276,9 @@ function generateEndPageHtml(){
     inputUserName.type = 'text';
     inputUserName.addEventListener('keyup', enableSave);
 
+    const statusEndPage = createDomElement('p', 'text-center hide', 'statusEndPage');
+    statusEndPage.innerHTML = '';
+
     const saveBtn = createDomElement('button', 'btn btn-info mt-3', 'saveScoreBtn');
     saveBtn.innerHTML = "Save";
     saveBtn.disabled = true;
@@ -276,7 +292,7 @@ function generateEndPageHtml(){
     goHomeBtn.innerHTML = 'Go Home';
     goHomeBtn.addEventListener('click', goToHome);
 
-    colEnd.append(pScore, inputUserName, saveBtn, playAgainBtn, goHomeBtn);
+    colEnd.append(pScore, inputUserName, statusEndPage, saveBtn, playAgainBtn, goHomeBtn);
     rowEnd.append(colEnd);
     containerEnd.append(rowEnd);
     document.body.append(containerEnd);
@@ -297,18 +313,52 @@ function enableSave(){
   }
 }
 
-function saveScore(){
+async function saveScore(){
   let highScores = [];
   if(localStorage.getItem('highScores')){
-    highScores = JSON.parse(localStorage.getItem('highScores'));
+    highScores = JSON.parse(localStorage.getItem('highScores'));  
   } else {
     highScores = [];
   }
   const score = localStorage.getItem('score');
   const userName = document.getElementById('userName').value;
+  if(checkUserNameExists(userName, highScores)){
+    // Show Error message
+    document.getElementById('statusEndPage').innerHTML = `User Name "${userName}" Already exists`;
+    document.getElementById('statusEndPage').classList.remove('hide');
+    document.getElementById('userName').value = '';
+    document.getElementById('saveScoreBtn').disabled = true;
+    await delay(2000);
+    //Hide error message after a delay
+    document.getElementById('statusEndPage').innerHTML = '';
+    document.getElementById('statusEndPage').classList.add('hide');
+    document.getElementById('userName').focus();
+    return;
+  }
   const highScore = {userName, score}
   highScores.push(highScore);
+  //Show user name added message for 2 seconds
+  document.getElementById('statusEndPage').innerHTML = `User Name added to the high scores list`;
+  document.getElementById('statusEndPage').classList.remove('hide');
+  document.getElementById('saveScoreBtn').disabled = true;
+  document.getElementById('userName').value = '';
+  document.getElementById('userName').disabled = true;
+  await delay(2000);
+  //Hide message after 2 seconds
+  document.getElementById('statusEndPage').innerHTML = '';
+  document.getElementById('statusEndPage').classList.add('hide');
   localStorage.setItem('highScores', JSON.stringify(highScores));
+}
+
+function checkUserNameExists(userName, highScores){
+  let userExists = false;
+  highScores.forEach(user => {
+    console.log(user.userName, userName);
+    if(user.userName === userName){
+      userExists = true;
+    }
+  })
+  return userExists;
 }
 
 /////////////////////////////////////// JS code for highScores.html START///////////////////////
@@ -346,7 +396,7 @@ function generateHighScoresList(highScores){
     tr.append(tdUserName, tdUserScore);
     table.append(tr);
   
-  //highScores.sort((a,b) => (a.score > b.score) ? 1 : ((b.score > a.score) ? -1 : 0));  
+  // highScores.sort((a,b) => (a.score > b.score) ? 1 : ((b.score > a.score) ? -1 : 0));  
   highScores.forEach(highScore => {
     const tr = createDomElement('tr');
       const pUserName = createDomElement('td', 'text-center');
